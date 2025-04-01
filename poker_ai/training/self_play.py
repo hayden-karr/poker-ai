@@ -1,7 +1,7 @@
 import numpy as np
 import os
-from poker_rl import PokerAgent
-from train import evaluate_agents
+from poker_ai.agents.poker_agent import PokerAgent
+from poker_ai.training.trainer import evaluate_agents
 
 def self_play_training(iterations=10, games_per_iteration=1000):
     """
@@ -38,7 +38,7 @@ def self_play_training(iterations=10, games_per_iteration=1000):
         print(f"Selelcted opponent: {opponent_idx}")
 
         # Train main agent against the selected opponent
-        from  train import train_poker_agent
+        from  poker_ai.training.trainer import train_poker_agent
         main_agent, _ = train_poker_agent(
             episodes=games_per_iteration,
             evaluate_every=games_per_iteration // 10,

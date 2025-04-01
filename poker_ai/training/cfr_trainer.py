@@ -1,7 +1,7 @@
 import numpy as np
 from collections import defaultdict
 from tqdm import tqdm
-from texas_holdem import Action
+from poker_ai.environment.texas_holdem import Action
 
 class CFRTrainer:
     def __init__(self, game):
@@ -137,7 +137,7 @@ class CFRTrainer:
         return f"{cards_str}|{community_str}|{phase_str}|{pot_str}|{bet_str}"
 
     def _get_valid_actions(self):
-        from train import get_valid_actions
+        from poker_ai.training.trainer import get_valid_actions
         return get_valid_actions(self.game, self.game.current_player)
     
     def _clone_game(self):

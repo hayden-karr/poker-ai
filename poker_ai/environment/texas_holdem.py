@@ -1,6 +1,6 @@
 # texas_holdem.py
 import numpy as np
-from poker_env import Deck, Card, Suit
+from poker_ai.environment.poker_env import Deck, Card, Suit
 from enum import Enum
 
 class Action(Enum):
@@ -230,8 +230,26 @@ class PokerGame:
             rewards[winner] = self.pot
             return rewards
         
-        # Otherwise, evaluate hands to see who wins -  need to implement
-        elif:
-            # iterate through players hands and check to see if they have a good hand
-            rewards[winner] = self.pot
-            return rewards
+        # Evaluate hands using hand_evaluator
+        from poker_ai.environment.hand_evaluator import evaluate_hand
+        
+        best_hand_value = -1
+        winners = []
+        
+        # Find the best hand and players with that hand
+        for i, player in enumerate(self.players):
+            if not player['folded']:
+                hand_value = evaluate_hand(player['hand'], self.community_cards)
+                if hand_value > best_hand_value:
+                    best_hand_value = hand_value
+                    winners = [i]
+                elif hand_value == best_hand_value:
+                    winners.append(i)
+        
+        # Distribute pot among winners
+        if winners:
+            split_amount = self.pot / len(winners)
+            for winner in winners:
+                rewards[winner] = split_amount
+        
+        return rewards

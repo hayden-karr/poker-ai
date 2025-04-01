@@ -1,0 +1,64 @@
+# Game environment settings
+environment:
+  num_players: 2
+  small_blind: 1
+  big_blind: 2
+  initial_stack: 100
+
+# State representation
+state:
+  state_dim: 227  # 52 (hand) + 52 (community) + 4 (phase) + 3 (pot/stack) + 6 (position) + 6 (dealer) + 104 (others)
+  action_dim: 5   # fold, check, call, raise, all-in
+
+# Neural network architecture
+model:
+  hidden_layers: [256, 128]
+  dropout_rate: 0.3
+  learning_rate: 0.001
+
+# Reinforcement learning parameters
+rl:
+  gamma: 0.95            # Discount factor
+  epsilon_start: 1.0     # Initial exploration rate
+  epsilon_end: 0.1       # Final exploration rate
+  epsilon_decay: 0.995   # Exploration decay rate
+  batch_size: 64         # Training batch size
+  buffer_size: 10000     # Replay buffer size
+  update_frequency: 4    # How often to update networks
+
+# Training settings
+training:
+  num_episodes: 5000     # Total number of episodes
+  evaluate_every: 500    # Evaluate performance every N episodes
+  save_every: 1000       # Save model every N episodes
+  eval_episodes: 100     # Number of episodes for evaluation
+  final_eval_episodes: 1000  # Number of episodes for final evaluation
+  bet_model_train_freq: 10   # Train bet model every N episodes
+
+# Self-play settings
+self_play:
+  enabled: false
+  iterations: 10
+  games_per_iteration: 1000
+  pool_size: 5           # Number of previous models to keep in pool
+
+# CFR training settings
+cfr:
+  enabled: false
+  iterations: 1000
+  abstraction_level: 'coarse'  # Options: 'fine', 'medium', 'coarse'
+
+# Transfer learning settings
+transfer:
+  enabled: false
+  source_model: ''       # Path to pre-trained model
+  trainable_layers: 2    # Number of layers to fine-tune
+  learning_rate: 0.0001  # Reduced learning rate for fine-tuning
+
+# Logging and experiment tracking
+logging:
+  level: 'INFO'
+  save_metrics: true
+  plot_metrics: true
+  tensorboard: true
+  log_dir: 'logs'

@@ -1,5 +1,6 @@
 #hand_evaluator.py
 from collections import Counter
+from enum import Enum
 
 def evaluate_hand(hole_cards, community_cards):
     """
@@ -8,11 +9,6 @@ def evaluate_hand(hole_cards, community_cards):
     Higher score is a better hand
     """
     all_cards = hole_cards + community_cards
-
-    # Check for Royal flush
-    royal_flush = check_royal_flush(all_cards)
-    if royal_flush:
-        return 9000000 + royal_flush # implement as if in the straight flush and return 1000000 extra?
 
     # Check for straight flush
     straight_flush = check_straight_flush(all_cards)
@@ -57,19 +53,47 @@ def evaluate_hand(hole_cards, community_cards):
     # High Card
     return check_high_card(all_cards)
 
-def check_straight_flush(cards)
+def check_straight_flush(cards):
     """
-    Check for royal flush or straight flush
-    """
-
-    for suit in range(4):
-        suited_cards = [card for card in cards if card.suit.value == suit]
-        if len(suited_cards) >= 5:
-            straight_value = check_straight(suited_cards)
-            if straight_value:
-                return straight_value
+    Check for straight flush (including royal flush)
     
-    return 0
+    Args:
+        cards: List of Card objects
+        
+    Returns:
+        int: Score value for the straight flush, with royal flush having the highest score
+             Returns 0 if no straight flush is found
+    """
+    for suit in range(4):
+        # Get all cards of the current suit
+        suited_cards = [card for card in cards if card.suit.value == suit]
+        
+        # Need at least 5 cards of the same suit for a straight flush
+        if len(suited_cards) >= 5:
+            # Sort cards by rank in descending order
+            suited_cards.sort(key=lambda card: card.rank, reverse=True)
+            
+            # Check for royal flush (A-K-Q-J-10 of the same suit)
+            royal_ranks = {14, 13, 12, 11, 10}  # A, K, Q, J, 10
+            card_ranks = {card.rank for card in suited_cards}
+            
+            if royal_ranks.issubset(card_ranks):
+                # Royal flush found - return highest possible score
+                return 9000000  # No need to add a value, it's already the highest
+            
+            # Check for other straight flushes
+            ranks = sorted({card.rank for card in suited_cards}, reverse=True)
+            
+            # Check for A-5-4-3-2 straight flush (special case)
+            if {14, 5, 4, 3, 2}.issubset(set(ranks)):
+                return 8000000 + 5  # 5-high straight flush
+            
+            # Check for regular straight flushes
+            for i in range(len(ranks) - 4):
+                if ranks[i] - ranks[i+4] == 4:
+                    return 8000000 + ranks[i]  # Return highest card as value
+    
+    return 0  # No straight flush found
 
 def check_four_kind(cards):
     """
@@ -98,7 +122,7 @@ def check_full_house(cards):
     for rank, count in counter.most_common():
         if count >= 3 and three_kind is None:
             three_kind = rank
-        if count count >= 2 and pair is None:
+        if count >= 2 and pair is None:
             pair = rank
     
     if three_kind and pair:
@@ -144,7 +168,7 @@ def check_three_kind(cards):
     for rank, count in counter.items():
         if count >= 3:
             kickers = sorted([r for r in ranks if r != rank], reverse =True)
-            reutnr rank * 10000 + kickers[0] * 100 + kickers[1]
+            return rank * 10000 + kickers[0] * 100 + kickers[1]
     return 0
 
 def check_two_pair(cards):
@@ -157,7 +181,7 @@ def check_two_pair(cards):
     pairs = [rank for rank, count in counter.items() if count >= 2]
     if len(pairs) >= 2:
         pairs.sort(reverse=True)
-        kickers = [r for r in ranks if r != pairs[0] and r != paris[1]]
+        kickers = [r for r in ranks if r != pairs[0] and r != pairs[1]]
         return pairs[0] * 10000 + pairs[1] * 100 + max(kickers)
     
     return 0
@@ -180,4 +204,4 @@ def check_high_card(cards):
     Evaluate a high card
     """
     ranks = sorted([card.rank for card in cards], reverse =True)
-    return sum(r * (100 ** i) for i, r in emumerate(ranks[:5]))
+    return sum(r * (100 ** i) for i, r in enumerate(ranks[:5]))

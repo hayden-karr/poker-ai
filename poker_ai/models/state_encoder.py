@@ -22,8 +22,8 @@ def create_state_representation(observation, max_players=6):
     phase_encoding[phase_map[observation['phase']]] = 1
 
     # Encode pot and stack information (normalized)
-    def pot_stack_encoding = np.array([
-        observation['pot'] / 1000, 
+    pot_stack_encoding = np.array([
+        observation['pot'] / 1000,
         observation['stack'] / 1000,
         observation['current_bet'] / 1000,
     ])
